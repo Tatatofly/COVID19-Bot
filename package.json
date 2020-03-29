@@ -1,0 +1,32 @@
+{
+  "name": "covid19-bot",
+  "version": "0.0.1",
+  "description": "COVID19 Bot a.k.a Corona-chan - Discord Bot",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tatatofly/COVID19-Bot.git"
+  },
+  "keywords": [
+    "corona",
+    "covid19",
+    "korona",
+    "discord",
+    "bot",
+    "china",
+    "virus",
+    "wuhan"
+  ],
+  "author": "Tatu Toikkanen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Tatatofly/COVID19-Bot/issues"
+  },
+  "homepage": "https://github.com/Tatatofly/COVID19-Bot#readme",
+  "dependencies": {
+    "discord.js": "^12.1.1"
+  }
+}
