@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const fetch = require('node-fetch')
+const schedule = require('node-schedule')
 const fs = require('fs')
 const config = require('./config')
 
@@ -11,34 +12,66 @@ let notified = {}
 let lastAPIUpdate = new Date()
 
 // Start Discord client & Login
-const client = new Discord.Client();
-client.login(config.discordToken);
+const client = new Discord.Client()
+client.login(config.discordToken)
 
 client.on('ready', () => {
   init()
+  schedule.scheduleJob(`*/${config.apiCooldown} * * * *`, function(){
+    getAPIData()
+    scanNotifies()
+  })
+  schedule.scheduleJob('50 11 * * *', function(){
+    removeNotified()
+  })
   console.log(`Logged in as ${client.user.tag}!`)
   client.user.setActivity(`COVID-19 - ${config.prefix}help`, { type: 'WATCHING' })
-});
+})
 
 client.on('message', msg => {
-  if (msg.content === `${config.prefix}help` || msg.content === `${config.prefix}info`) {
-    msg.channel.send(createHelpMessage())
-  } else if (msg.content === `${config.prefix}s`) {
-    msg.channel.send(createDataMessage('confirmed', 'Sairastuneet'))
-  } else if (msg.content === `${config.prefix}k`) {
-    msg.channel.send(createDataMessage('deaths', 'Kuolleet'))
-  } else if (msg.content === `${config.prefix}p`) {
-    msg.channel.send(createDataMessage('recovered', 'Parantuneet'))
-  } else if (msg.content === `${config.prefix}kooste`) {
-    msg.channel.send('Lähetän tälle kanavalle koosteen päivittäin')
-    addToNotify(msg.channel.id, msg.author.tag)
-  } else if (msg.content === `${config.prefix}pkooste`) {
-    msg.channel.send('Kanava poistettu koostelistalta')
-    delFromNotify(msg.channel.id)
-  } else if (msg.content === `${config.prefix}debugscan`) {
-    scanNotifies()
+  if(msg.content.startsWith(config.prefix)) {
+    switch(msg.content) {
+      case `${config.prefix}help`:
+        msg.channel.send(createHelpMessage())
+        break
+      case `${config.prefix}nyt`:
+        msg.channel.send(createAllDataMessage())
+        break
+      case `${config.prefix}s`:
+        msg.channel.send(createDataMessage('confirmed', 'Sairastuneet'))
+        break
+      case `${config.prefix}k`:
+        msg.channel.send(createDataMessage('deaths', 'Kuolleet'))
+        break
+      case `${config.prefix}p`:
+        msg.channel.send(createDataMessage('recovered', 'Parantuneet'))
+        break
+      case `${config.prefix}kooste`:
+        msg.channel.send('Lähetän tälle kanavalle koosteen päivittäin')
+        addToNotify(msg.channel.id, msg.author.tag)
+        break
+      case `${config.prefix}pkooste`:
+        msg.channel.send('Kanava poistettu koostelistalta')
+        delFromNotify(msg.channel.id)
+        break
+      default:
+        if (msg.content.startsWith(`${config.prefix}s `)) {
+          const hourArray = msg.content.split(" ", 2)
+          const hours = hourArray[1]
+          msg.channel.send(createDataMessage('confirmed', 'Sairastuneet', hours))
+        } else if (msg.content.startsWith(`${config.prefix}k `)) {
+          const hourArray = msg.content.split(" ", 2)
+          const hours = hourArray[1]
+          msg.channel.send(createDataMessage('deaths', 'Kuolleet', hours))
+        } else if (msg.content.startsWith(`${config.prefix}p `)) {
+          const hourArray = msg.content.split(" ", 2)
+          const hours = hourArray[1]
+          msg.channel.send(createDataMessage('recovered', 'Parantuneet', hours))
+        }
+        break
+    }
   }
-});
+})
 
 
 // Functions
@@ -50,11 +83,21 @@ async function init() {
 
 async function getAPIData() {
   try {
-    const response = await fetch(config.apiURL);
-    apiData = await response.json();
+    const response = await fetch(config.apiURL)
+    apiData = await response.json()
     lastAPIUpdate = new Date()
   } catch (error) {
-    console.log(error);
+    console.log(error)
+  }
+}
+
+async function removeNotified() {
+  try {
+    fs.unlink(config.dailyNotifiedFile, function (error) {
+      if (error) throw error
+    })
+  } catch(error) {
+    console.log(error)
   }
 }
 
@@ -156,7 +199,31 @@ async function saveNotify(json, file) {
   }
 }
 
-function createDataMessage(dataName, dataTitle) {
+function createDataMessage(dataName, dataTitle, hours) {
+  if(typeof hours !== 'undefined' && hours && !isNaN(hours)) {
+    const dataMessage = {
+      "embed": {
+        "title": `${dataTitle} Suomessa ${hours}h sisällä`,
+        "description": `Yhteensä: ${apiData[dataName].filter(i => new Date(i.date) > new Date(new Date().getTime() - (hours * 60 * 60 * 1000))).length}`,
+        "color": 16254760,
+        "footer": {
+          "icon_url": "https://cdn.discordapp.com/app-icons/693855966734712942/4cb8be178f68f0b9476d16b5765cbcda.png?size=256",
+          "text": "Data haettu"
+        },
+        "timestamp": lastAPIUpdate,
+        "fields": [
+          config.healthCareDistricts.map(dist => {
+            return { "name": dist, "value": apiData[dataName].filter(i => i.healthCareDistrict === dist).filter(i => new Date(i.date) > new Date(new Date().getTime() - (hours * 60 * 60 * 1000))).length, "inline": true}
+          }), {
+            "name": "Tuntematon",
+            "value": apiData[dataName].filter(i => i.healthCareDistrict == null).filter(i => new Date(i.date) > new Date(new Date().getTime() - (hours * 60 * 60 * 1000))).length
+          }
+        ]
+      }
+    }
+    return dataMessage
+  }
+
   const dataMessage = {
     "embed": {
       "title": `${dataTitle} Suomessa`,
@@ -177,6 +244,36 @@ function createDataMessage(dataName, dataTitle) {
       ]
     }
   }
+  return dataMessage
+}
+
+function createAllDataMessage() {
+  const dataMessage = {
+    "embed": {
+      "title": 'Tilanne Suomessa',
+      "description": `Sairastunut: ${apiData.confirmed.length} - Kuollut: ${apiData.deaths.length} - Parantunut: ${apiData.recovered.length}`,
+      "color": 16254760,
+      "footer": {
+        "icon_url": "https://cdn.discordapp.com/app-icons/693855966734712942/4cb8be178f68f0b9476d16b5765cbcda.png?size=256",
+        "text": "Data haettu"
+      },
+      "timestamp": lastAPIUpdate,
+      "fields": [
+        config.healthCareDistricts.map(dist => {
+          return { "name": dist, "value": `
+          S: ${apiData.confirmed.filter(i => i.healthCareDistrict === dist).length}
+          K: ${apiData.deaths.filter(i => i.healthCareDistrict === dist).length}
+          P: ${apiData.recovered.filter(i => i.healthCareDistrict === dist).length}`, "inline": true}
+        }), {
+          "name": "Tuntematon",
+          "value": `
+          S: ${apiData.confirmed.filter(i => i.healthCareDistrict === null).length}
+          K: ${apiData.deaths.filter(i => i.healthCareDistrict === null).length}
+          P: ${apiData.recovered.filter(i => i.healthCareDistrict === null).length}`
+        }
+      ]
+    }
+  }
 
   return dataMessage
 }
@@ -184,17 +281,30 @@ function createDataMessage(dataName, dataTitle) {
 function createNotifyMessage() {
   const dataMessage = {
     "embed": {
-      "title": 'Nykyhetki Suomessa',
-      "description": `Sairastuneet: ${apiData.confirmed.length} - Kuolleet: ${apiData.deaths.length} - Parantuneet: ${apiData.recovered.length}`,
+      "title": 'Suomen 24h muutos',
+      "description": `Sairastunut: ${apiData.confirmed.filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length} - Kuollut: ${apiData.deaths.filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length} - Parantunut: ${apiData.recovered.filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length}`,
       "color": 16254760,
       "footer": {
         "icon_url": "https://cdn.discordapp.com/app-icons/693855966734712942/4cb8be178f68f0b9476d16b5765cbcda.png?size=256",
         "text": "Data haettu"
       },
-      "timestamp": lastAPIUpdate
+      "timestamp": lastAPIUpdate,
+      "fields": [
+        config.healthCareDistricts.map(dist => {
+          return { "name": dist, "value": `
+          S: ${apiData.confirmed.filter(i => i.healthCareDistrict === dist).filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length}
+          K: ${apiData.deaths.filter(i => i.healthCareDistrict === dist).filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length}
+          P: ${apiData.recovered.filter(i => i.healthCareDistrict === dist).filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length}`, "inline": true}
+        }), {
+          "name": "Tuntematon",
+          "value": `
+          S: ${apiData.confirmed.filter(i => i.healthCareDistrict === null).filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length}
+          K: ${apiData.deaths.filter(i => i.healthCareDistrict === null).filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length}
+          P: ${apiData.recovered.filter(i => i.healthCareDistrict === null).filter(i => new Date(i.date) > new Date(new Date().getTime() - (24 * 60 * 60 * 1000))).length}`
+        }
+      ]
     }
   }
-
   return dataMessage
 }
 
@@ -224,6 +334,11 @@ function createHelpMessage() {
           "value": "Näyttää tämän viestin"
         },
         {
+          "name": `${config.prefix}nyt`,
+          "value": "Koko Suomen nykytilanne jaettuna sairaanhoitopiirien mukaan",
+          "inline": false
+        },
+        {
           "name": `${config.prefix}s`,
           "value": "Sairastuneet sairaanhoitopiirien mukaan",
           "inline": true
@@ -236,6 +351,31 @@ function createHelpMessage() {
         {
           "name": `${config.prefix}p`,
           "value": "Parantuneet sairaanhoitopiirien mukaan",
+          "inline": true
+        },
+        {
+          "name": `${config.prefix}s *tuntia*`,
+          "value": "Rajattuna tunneilla nykyhetkestä",
+          "inline": true
+        },
+        {
+          "name": `${config.prefix}k *tuntia*`,
+          "value": "Rajattuna tunneilla nykyhetkestä",
+          "inline": true
+        },
+        {
+          "name": `${config.prefix}p *tuntia*`,
+          "value": "Rajattuna tunneilla nykyhetkestä",
+          "inline": true
+        },
+        {
+          "name": `${config.prefix}kooste`,
+          "value": "Tilaa kanavalle 24h muutokset päivittäisessä koosteessa",
+          "inline": true
+        },
+        {
+          "name": `${config.prefix}pkooste`,
+          "value": "Peruuttaa kanavan koosteen tilauksen",
           "inline": true
         }
       ]

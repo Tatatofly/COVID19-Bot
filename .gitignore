@@ -1,3 +1,7 @@
+# Bot files
+dailyNotify.json
+dailyNotified.json
+
 # Logs
 logs
 *.log
