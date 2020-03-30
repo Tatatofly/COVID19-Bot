@@ -4,11 +4,13 @@
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 [![HitCount](http://hits.dwyl.io/Tatatofly/COVID19-Bot.svg)](http://hits.dwyl.io/Tatatofly/COVID19-Bot)
 
-COVID19 Bot a.k.a Corona-chan made with JavaScript powered by Node.JS
-
 Live testit ja tuki: [https://discord.gg/pGbbcgV](https://discord.gg/pGbbcgV)
 
 ![COVID19-BOT](https://files.tatu.moe/covidbot-github.png)
+
+---
+
+
 
 #### Komennot
 ###### Tiedot
@@ -25,6 +27,10 @@ Live testit ja tuki: [https://discord.gg/pGbbcgV](https://discord.gg/pGbbcgV)
 ###### Koosteet
 - !kooste : Tilaa kanavalle 24h muutokset päivittäisessä koosteessa
 - !pkooste : Peruuttaa kanavan koosteen tilauksen
+
+---
+
+
 
 #### config.js
 ```
@@ -43,9 +49,19 @@ npm install
 npm start
 ```
 
+
+---
+
+## Data
+
+Data tulee HS:n rajapinnasta avoimena datana. ks. [https://github.com/HS-Datadesk/koronavirus-avoindata](https://github.com/HS-Datadesk/koronavirus-avoindata)
+
+---
+
+
 ## Tuki
 
-Reach out to me at one of the following places!
+Ota yhteyttä jollakin seuraavista!
 
 - Nettisivut <a href="https://tatu.moe" target="_blank">`Tatu.Moe`</a>
 - Twitter <a href="https://twitter.com/TatuFin" target="_blank">`@TatuFin`</a>
