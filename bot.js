@@ -99,6 +99,7 @@ async function removeNotified() {
   } catch(error) {
     console.log(error)
   }
+  await loadNotifyFile()
 }
 
 function notifyChannel(channelID) {
