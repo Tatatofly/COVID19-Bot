@@ -100,6 +100,7 @@ async function removeNotified() {
     console.log(error)
   }
   await loadNotifyFile()
+  notified = JSON.parse('{"notifiedChans":[]}')
 }
 
 function notifyChannel(channelID) {
