@@ -7,7 +7,7 @@ config.apiCooldown = 10 // In minutes
 config.dailyNotifyFile = 'dailyNotify.json'
 config.dailyNotifiedFile = 'dailyNotified.json'
 
-config.apiURL = 'https://w3qa5ydb4l.execute-api.eu-west-1.amazonaws.com/prod/finnishCoronaData'
+config.apiURL = 'https://w3qa5ydb4l.execute-api.eu-west-1.amazonaws.com/prod/finnishCoronaData/v2'
 
 config.healthCareDistricts = ['HUS','Lappi','Länsi-Pohja','Pohjois-Pohjanmaa','Kainuu','Keski-Pohjanmaa','Pohjois-Savo','Pohjois-Karjala','Vaasa','Keski-Suomi','Etelä-Pohjanmaa','Satakunta','Pirkanmaa','Etelä-Savo','Itä-Savo','Etelä-Karjala','Päijät-Häme','Kanta-Häme','Kymenlaakso','Varsinais-Suomi','Ahvenanmaa']
 
