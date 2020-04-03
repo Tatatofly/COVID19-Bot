@@ -8,7 +8,7 @@ const config = require('./config')
 
 let apiData = {}
 let notifyData = {}
-let notified = {}
+let notified = {"notifiedChans":[]}
 let lastAPIUpdate = new Date()
 
 // Start Discord client & Login
@@ -96,11 +96,11 @@ async function removeNotified() {
     fs.unlink(config.dailyNotifiedFile, function (error) {
       if (error) throw error
     })
+    notified = {"notifiedChans":[]}
+    fs.writeFileSync(config.dailyNotifiedFile, '{"notifiedChans":[]}')
   } catch(error) {
     console.log(error)
   }
-  await loadNotifyFile()
-  notified = JSON.parse('{"notifiedChans":[]}')
 }
 
 function notifyChannel(channelID) {
@@ -134,7 +134,7 @@ async function loadNotifyFile() {
       if (error && error.code === 'ENOENT'){
           try {
             fs.writeFileSync(config.dailyNotifyFile, '{"channels":[]}')
-            notifyData = JSON.parse('{"channels":[]}')
+            notifyData = {"channels":[]}
           } catch(error) {
             console.log(`Cannot create new ${config.dailyNotifyFile} file.`)
           }
@@ -146,7 +146,7 @@ async function loadNotifyFile() {
       if (error && error.code === 'ENOENT'){
           try {
             fs.writeFileSync(config.dailyNotifiedFile, '{"notifiedChans":[]}')
-            notified = JSON.parse('{"notifiedChans":[]}')
+            notified = {"notifiedChans":[]}
           } catch(error) {
             console.log(`Cannot create new ${config.dailyNotifiedFile} file.`)
           }
