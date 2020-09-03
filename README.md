@@ -1,6 +1,8 @@
 # COVID19-Bot
 >COVID19 Bot a.k.a Corona-chan made with JavaScript powered by Node.JS
 
+>Verified by Discord
+
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 [![HitCount](http://hits.dwyl.io/Tatatofly/COVID19-Bot.svg)](http://hits.dwyl.io/Tatatofly/COVID19-Bot)
 
