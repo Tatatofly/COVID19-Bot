@@ -65,7 +65,7 @@ Data tulee HS:n rajapinnasta avoimena datana. ks. [https://github.com/HS-Datades
 
 Ota yhteyttä jollakin seuraavista!
 
-- Nettisivut <a href="https://tatu.moe" target="_blank">`Tatu.Moe`</a>
+- Nettisivut at <a href="https://tatato.fi" target="_blank">`Tatato.fi`</a>
 - Twitter <a href="https://twitter.com/TatuFin" target="_blank">`@TatuFin`</a>
 - Instagram <a href="https://www.instagram.com/tatu.moe/" target="_blank">`@Tatu.Moe`</a>
 - LinkedIn <a href="https://www.linkedin.com/in/tatatofly/" target="_blank">`Tatatofly`</a>
@@ -76,4 +76,4 @@ Ota yhteyttä jollakin seuraavista!
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 
 - **[MIT license](http://opensource.org/licenses/mit-license.php)**
-- Copyright 2020 © <a href="https://tatu.moe" target="_blank">Tatu Toikkanen</a>.
+- Copyright 2020 © <a href="https://tatato.fi" target="_blank">Tatu Toikkanen</a>.
