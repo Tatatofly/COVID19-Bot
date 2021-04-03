@@ -67,7 +67,6 @@ Ota yhteyttä jollakin seuraavista!
 
 - Nettisivut at <a href="https://tatato.fi" target="_blank">`Tatato.fi`</a>
 - Twitter <a href="https://twitter.com/TatuFin" target="_blank">`@TatuFin`</a>
-- Instagram <a href="https://www.instagram.com/tatu.moe/" target="_blank">`@Tatu.Moe`</a>
 - LinkedIn <a href="https://www.linkedin.com/in/tatatofly/" target="_blank">`Tatatofly`</a>
 
 ---
