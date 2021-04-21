@@ -66,7 +66,7 @@ Ota yhteyttä jollakin seuraavista!
 
 - Nettisivut at <a href="https://tatato.fi" target="_blank">`Tatato.fi`</a>
 - Twitter <a href="https://twitter.com/TatuFin" target="_blank">`@TatuFin`</a>
-- LinkedIn <a href="https://www.linkedin.com/in/tatutoikkanen/" target="_blank">`Tatu Toikkanen`</a>
+- LinkedIn <a href="https://www.linkedin.com/in/tatu-toikkanen/" target="_blank">`Tatu Toikkanen`</a>
 
 ---
 
